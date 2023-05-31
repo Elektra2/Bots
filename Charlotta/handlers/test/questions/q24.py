@@ -1,0 +1,49 @@
+#Импорты
+from handlers.test.question_dic import questions
+from aiogram import types
+from config.bot_config import dp, bot
+from aiogram.dispatcher import FSMContext
+from handlers.test.start_test import FSM_test
+
+
+#В этой функции записывается название поста
+@dp.callback_query_handler(text='Q24_correct', state=FSM_test.Q24)
+async def Q24(callback_query: types.CallbackQuery, state: FSMContext):
+    #Записываем в дату название поста
+    async with state.proxy() as data:
+        data['Q24'] = 4
+        #Переходим к следующему состоянию
+        await FSM_test.next()
+        await bot.delete_message(chat_id=callback_query.from_user.id,
+                             message_id=callback_query.message.message_id)
+        #Отправляем сообщение
+        test_Q24 = types.InlineKeyboardMarkup()
+        otv = questions[24]['options']
+        for i in range(len(otv)):
+            if i == questions[24]['answer']:
+                test_Q24.row( types.InlineKeyboardButton(otv[i], callback_data='Q25_correct'))
+            else:
+                test_Q24.row( types.InlineKeyboardButton(otv[i], callback_data='Q25_incorrect'))
+        await bot.send_photo(chat_id=callback_query.from_user.id, photo=questions[24]['photo'], caption=f"Вопрос 25/30:\n{questions[24]['question']}",
+                            reply_markup=test_Q24)
+
+@dp.callback_query_handler(text='Q24_incorrect', state=FSM_test.Q24)
+async def Q24(callback_query: types.CallbackQuery, state: FSMContext):
+    #Записываем в дату название поста
+    async with state.proxy() as data:
+        data['Q24'] = 0
+        #Переходим к следующему состоянию
+        await FSM_test.next()
+        #Удаляем предидущее сообщение
+        await bot.delete_message(chat_id=callback_query.from_user.id,
+                             message_id=callback_query.message.message_id)
+        #Отправляем сообщение
+        test_Q24 = types.InlineKeyboardMarkup()
+        otv = questions[24]['options']
+        for i in range(len(otv)):
+            if i == questions[24]['answer']:
+                test_Q24.row( types.InlineKeyboardButton(otv[i], callback_data='Q25_correct'))
+            else:
+                test_Q24.row( types.InlineKeyboardButton(otv[i], callback_data='Q25_incorrect'))
+        await bot.send_photo(chat_id=callback_query.from_user.id, photo=questions[24]['photo'], caption=f"Вопрос 25/30:\n{questions[24]['question']}",
+                            reply_markup=test_Q24)
