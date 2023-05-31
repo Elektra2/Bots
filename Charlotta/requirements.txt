@@ -1,0 +1,11 @@
+aiogram
+python-dotenv
+asyncpg
+googletrans==4.0.0-rc1
+jinja2
+aiofiles
+aioscheduler
+requests
+openai
+psycopg2
+aiocron
